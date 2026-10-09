@@ -326,7 +326,7 @@ section,header{scroll-margin-top:96px}
     <p class="lede">Bloom Ohio lets you redirect tax you already owe into scholarships for students at 11 Adventist schools across Ohio. Dollar for dollar. Slide the bar and watch your gift bloom.</p>
     <ul class="short" id="short">
       <li><b>Costs you nothing extra</b> if you owe at least that much in Ohio tax. It's a tax credit.</li>
-      <li><b>Gifts open soon.</b> We're waiting on the Ohio Attorney General's approval.</li>
+      <li><b id="b2h">Gifts open soon.</b> <span id="b2t">We're waiting on the Ohio Attorney General's approval.</span></li>
       <li><b>Pick the General Fund or your school.</b> You can't name a student, and at least 90% goes straight to scholarships.</li>
     </ul>
     <div class="btns hero-btns"><a class="btn primary" href="#join" data-tojoin>Join the interest list</a><a class="btn ghost" href="#families">Need a scholarship? Start here</a><a class="btn ghost" href="#enroll" id="enroll-btn">Not enrolled yet? Find your school</a></div>
@@ -453,7 +453,8 @@ section,header{scroll-margin-top:96px}
       <p class="note" id="jf-msg" aria-live="polite">We'll open the sign-up form with your answers filled in. Tap Submit there to finish.</p>
     </form>
     <div class="btns">
-      <button class="btn ghost" type="button" id="vid-btn" aria-expanded="false" style="background:none;cursor:pointer">Watch the 2-minute video</button>
+      <button class="btn ghost" type="button" id="vid-en" data-lang="en" aria-expanded="false" style="background:none;cursor:pointer" lang="en">Watch the video (English)</button>
+      <button class="btn ghost" type="button" id="vid-es" data-lang="es" aria-expanded="false" style="background:none;cursor:pointer" lang="es">Vea el video en español</button>
       <a class="btn ghost" href="https://irp.cdn-website.com/e883bbd8/files/uploaded/Bloom_Ohio_SGO_FAQ-31872838.pdf" target="_blank" rel="noopener">Read the full FAQ (PDF)</a>
     </div>
     <div class="vid" id="vid" hidden><video id="vid-el" controls preload="none" playsinline></video></div>
@@ -483,7 +484,8 @@ section,header{scroll-margin-top:96px}
   // approved: flip to true the day the Ohio Attorney General approves Bloom Ohio.
   // expectedBy: last day of the month approval is expected. After that date, if still not approved,
   // the page automatically says "Approval pending" instead of showing a stale month.
-  const STATUS={approved:false, expectedBy:'2026-11-30', expectedLabel:['Nov 2026','nov 2026']};
+  // giftsOpen: flip to true the day Bloom Ohio can actually receive gifts.
+  const STATUS={approved:true, approvedOn:['Oct 9, 2026','9 oct 2026'], giftsOpen:false, expectedBy:'2026-11-30', expectedLabel:['Nov 2026','nov 2026']};
   const FORM='https://docs.google.com/forms/d/e/1FAIpQLSd5Cb2Yfb1dDWNXFolJSue0YsZ-OA9ymnZjJMexPkVnYesKnQ/viewform';
   const VIDEO={en:'https://vid.cdn-website.com/e883bbd8/videos/38a9ab0f-61ad-4ea0-86ff-d10e0d774ecf_Bloom-Ohio-Promo-Video-v.mp4',es:'https://vid.cdn-website.com/e883bbd8/videos/1103118b-8cf9-4d68-a0b1-d6c92e14380f_Bloom-Ohio-Video-Espanol-v.mp4'};
   const slipped=()=>!STATUS.approved && new Date()>new Date(STATUS.expectedBy+'T23:59:59');
@@ -505,7 +507,7 @@ section,header{scroll-margin-top:96px}
     "Full name":"Nombre completo",
     "Phone":"Teléfono",
     "Email":"Correo electrónico",
-    "Watch the 2-minute video":"Vea el video de 2 minutos",
+    "Watch the video (English)":"Vea el video (en inglés)",
     "Read the full FAQ (PDF)":"Preguntas frecuentes en inglés (PDF)",
     "How do I know if I owe enough?":"¿Cómo sé si debo lo suficiente?",
     "Look at last year's Ohio income tax return (Ohio IT 1040). If your total Ohio tax was at least $750, you can use the full Ohio credit. For the federal credit, check the total tax on your federal Form 1040. Many retirees owe less than you'd think, so check before you give.":"Revise su declaración de impuestos de Ohio del año pasado (Ohio IT 1040). Si su impuesto total de Ohio fue de al menos $750, puede usar el crédito completo de Ohio. Para el crédito federal, revise el impuesto total en su Formulario federal 1040. Muchos jubilados deben menos de lo que creen, así que revise antes de donar.",
@@ -603,8 +605,17 @@ section,header{scroll-margin-top:96px}
   // ---------- status bar ----------
   function renderStatus(){
     const g=$('gatebar');
-    if(STATUS.approved){
+    if(STATUS.approved && !STATUS.giftsOpen){
       g.classList.add('open');
+      $('gate-txt').innerHTML=tr('<b><span class="gfull">Bloom Ohio is approved!</span><span class="gmini">Approved! Gifts soon</span></b> <span class="glong">Gifts open soon. Join the list and we\'ll send you the steps.</span>','<b><span class="gfull">¡Bloom Ohio fue aprobada!</span><span class="gmini">¡Aprobada! Pronto</span></b> <span class="glong">Las donaciones abren pronto. Únase a la lista y le enviaremos los pasos.</span>');
+      $('status-txt').textContent=tr('Bloom Ohio is approved by the Ohio Attorney General as of October 9, 2026. Gifts open soon. Join the interest list and we\'ll send you the exact steps first.','Bloom Ohio fue aprobada por el Fiscal General de Ohio el 9 de octubre de 2026. Las donaciones abren pronto. Únase a la lista de interés y le enviaremos los pasos exactos primero.');
+      $('preview').textContent=tr('Preview. Gifts open soon.','Vista previa. Las donaciones abren pronto.');
+      $('b2h').textContent=tr('Approved. Gifts open soon.','Aprobada. Las donaciones abren pronto.');
+      $('b2t').textContent=tr('The Ohio Attorney General certified Bloom Ohio on October 9, 2026.','El Fiscal General de Ohio certificó a Bloom Ohio el 9 de octubre de 2026.');
+    } else if(STATUS.approved){
+      g.classList.add('open');
+      $('b2h').textContent=tr('Gifts are open.','Las donaciones están abiertas.');
+      $('b2t').textContent=tr('Bloom Ohio is certified by the Ohio Attorney General.','Bloom Ohio está certificada por el Fiscal General de Ohio.');
       $('gate-txt').innerHTML=tr('<b>Gifts are open.</b> <span class="glong">Bloom Ohio is approved. Join the list for step-by-step giving instructions.</span>','<b>Las donaciones están abiertas.</b> <span class="glong">Bloom Ohio fue aprobada. Únase a la lista para recibir los pasos para donar.</span>');
       $('status-txt').textContent=tr('Bloom Ohio is approved by the Ohio Attorney General. Gifts are open now.','Bloom Ohio fue aprobada por el Fiscal General de Ohio. Las donaciones ya están abiertas.');
       $('preview').hidden=true;
@@ -613,6 +624,8 @@ section,header{scroll-margin-top:96px}
       $('gate-txt').innerHTML=tr(`<b><span class="gfull">Gifts aren't open yet.</span><span class="gmini">Gifts not open yet</span></b> <span class="glong">Bloom Ohio is waiting on approval from the Ohio Attorney General. ${when}</span>`,`<b><span class="gfull">Las donaciones aún no están abiertas.</span><span class="gmini">Aún no abren</span></b> <span class="glong">Bloom Ohio espera la aprobación del Fiscal General de Ohio. ${when}</span>`);
       $('status-txt').textContent=tr("Bloom Ohio's scholarship organization application is under review by the Ohio Attorney General. Gifts open the moment it's approved. Join the interest list and we'll tell you first.","La solicitud de Bloom Ohio como organización de becas está en revisión por el Fiscal General de Ohio. Las donaciones se abren en cuanto sea aprobada. Únase a la lista de interés y se lo avisaremos primero.");
       $('preview').textContent=tr("Preview. Gifts aren't open yet.",'Vista previa. Las donaciones aún no están abiertas.');
+      $('b2h').textContent=tr('Gifts open soon.','Las donaciones abren pronto.');
+      $('b2t').textContent=tr("We're waiting on the Ohio Attorney General's approval.",'Esperamos la aprobación del Fiscal General de Ohio.');
     }
   }
   renderStatus(); rerender.push(renderStatus);
@@ -755,7 +768,7 @@ section,header{scroll-margin-top:96px}
   const today=new Date(); let nowIdx=-1;
   // Approval step is driven by STATUS, not by the calendar. Nothing after it shows as done until approval.
   steps.forEach((s,i)=>{if(s[0]==='APPROVAL'){if(STATUS.approved&&nowIdx===i-1)nowIdx=i;return}if(new Date(s[0]+'T00:00:00')<=today&&nowIdx>=i-1)nowIdx=i});
-  const apprLabel=()=>STATUS.approved?[tr('Approved','Aprobada'),tr('Approved by the Ohio Attorney General. Gifts open.','Aprobada por el Fiscal General de Ohio. Se abren las donaciones.')]:slipped()?[tr('Approval pending','Aprobación pendiente'),tr('Approval expected soon. Gifts open the day it comes.','Aprobación esperada pronto. Las donaciones se abren ese mismo día.')]:[tr(STATUS.expectedLabel[0],STATUS.expectedLabel[1]),tr('Approval expected. Gifts open.','Aprobación esperada. Se abren las donaciones.')];
+  const apprLabel=()=>STATUS.approved?[tr(STATUS.approvedOn[0],STATUS.approvedOn[1]),STATUS.giftsOpen?tr('Approved by the Ohio Attorney General. Gifts open.','Aprobada por el Fiscal General de Ohio. Se abren las donaciones.'):tr('Approved by the Ohio Attorney General! Gifts open soon.','¡Aprobada por el Fiscal General de Ohio! Las donaciones abren pronto.')]:slipped()?[tr('Approval pending','Aprobación pendiente'),tr('Approval expected soon. Gifts open the day it comes.','Aprobación esperada pronto. Las donaciones se abren ese mismo día.')]:[tr(STATUS.expectedLabel[0],STATUS.expectedLabel[1]),tr('Approval expected. Gifts open.','Aprobación esperada. Se abren las donaciones.')];
   const stepsES=[['8 oct 2026','Solicitud presentada ante el Fiscal General de Ohio'],['Nov 2026','Aprobación esperada. Se abren las donaciones.'],['31 dic 2026','Fin de año. Una donación de 2026 recibe el crédito de Ohio.'],['1 ene 2027','Comienza el crédito federal. Se abren las solicitudes de familias.'],['15 abr 2027','Día de impuestos. Último día para que una donación cuente en su declaración de Ohio de 2026.'],['Primavera 2027','Becas otorgadas según la necesidad'],['15 ago 2027','Primeras becas pagadas a las escuelas']];
   const tl=$('tl');
   function renderTL(){tl.innerHTML='';steps.forEach((s0,i)=>{let s=LANG==='es'?[s0[0],stepsES[i][0],stepsES[i][1]]:s0;if(s0[0]==='APPROVAL'){const a=apprLabel();s=[s0[0],a[0],a[1]]}const d=document.createElement('div');d.className='step'+(i<=nowIdx?' done':'')+(i===nowIdx+1?' now':'');
@@ -852,9 +865,12 @@ section,header{scroll-margin-top:96px}
   $('gate-link').addEventListener('click',e=>{e.preventDefault();$('join').scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>$('jf-name').focus({preventScroll:true}),800)});
 
   // ---------- video ----------
-  const setVid=()=>{const v=$('vid-el');const want=VIDEO[LANG];if(v.dataset.src!==want){v.dataset.src=want;if(!$('vid').hidden){v.src=want}}};
-  setVid(); rerender.push(setVid);
-  $('vid-btn').onclick=()=>{const box=$('vid'),v=$('vid-el'),open=box.hidden;box.hidden=!open;$('vid-btn').setAttribute('aria-expanded',open);if(open){if(v.getAttribute('src')!==v.dataset.src)v.src=v.dataset.src;v.play&&v.play().catch(()=>{})}else{v.pause&&v.pause()}};
+  // Both videos (English and Spanish) are always offered. Tapping the one already playing closes it.
+  let vidOn=null;
+  ['vid-en','vid-es'].forEach(id=>$(id).onclick=()=>{const l=$(id).dataset.lang,box=$('vid'),v=$('vid-el');
+    if(vidOn===l){v.pause&&v.pause();box.hidden=true;vidOn=null}
+    else{v.src=VIDEO[l];box.hidden=false;vidOn=l;v.play&&v.play().catch(()=>{})}
+    ['vid-en','vid-es'].forEach(x=>$(x).setAttribute('aria-expanded',vidOn===$(x).dataset.lang))});
 
   // ---------- share ----------
   $('share').onclick=async()=>{const url='https://www.ohioadventist.org/bloom-ohio';const text=tr('Redirect your Ohio taxes into scholarships for students at 11 Adventist schools. See what it could cost you. For many people, nothing:','Redirija sus impuestos de Ohio a becas para estudiantes de 11 escuelas adventistas. Vea cuánto le podría costar. Para muchas personas, nada:');
